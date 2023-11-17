@@ -1,26 +1,63 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Suspense, lazy } from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+import { Box, CircularProgress } from "@mui/material";
+
+import NavBar from "./components/Navbar";
+
+import { FavoriteProvider } from "./context/FavoriteContext";
+
+const MovieList = lazy(() => import("./components/Movie/List"));
+const MovieDetail = lazy(() => import("./components/Movie/Detail"));
+
+const App: React.FC = () => (
+  <FavoriteProvider>
+    <Router>
+      <NavBar />
+      <Box sx={{ flexGrow: 1, p: 3 }}>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Suspense
+                fallback={
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <CircularProgress />
+                  </Box>
+                }
+              >
+                <MovieList />
+              </Suspense>
+            }
+          />
+          <Route
+            path="/movie/:imdbID"
+            element={
+              <Suspense
+                fallback={
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <CircularProgress />{" "}
+                  </Box>
+                }
+              >
+                <MovieDetail />
+              </Suspense>
+            }
+          />
+        </Routes>
+      </Box>
+    </Router>
+  </FavoriteProvider>
+);
 
 export default App;
